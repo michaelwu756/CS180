@@ -1,0 +1,116 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\begin{document}
+\title{Computer Science 180, Homework 2}
+\date{January 25th, 2018}
+\author{Michael Wu\\UID: 404751542}
+\maketitle
+
+\section*{Chapter 1, Problem 5}
+
+\paragraph{a)}
+
+The Gale-Shapely algorithm always produces a perfect matching with no strong instability,
+if it is modified so that a woman \(w\) rejects any man \(m^\prime\) who asks her to be engaged
+if she is already engaged to a man \(m\) who she prefers equally to the man \(m^\prime\).
+In full the algorithm is as follows
+
+\begin{verbatim}
+Initially all men m in M and women w in W are free
+While there are free men m who haven't proposed to every woman
+    Choose such a man m
+    Let w be one of m's unasked and most preferred women
+    If w is free then
+        (m,w) become engaged
+    Else (m',w) are already engaged
+        If w prefers m' more than or equal to m then
+            m remains free
+        Else
+            (m,w) become engaged
+            m' becomes free
+        Endif
+    Endif
+Endwhile
+Return the set S of engaged pairs
+\end{verbatim}
+This algorithm must generate a matching because the algorithm terminates after no men exist
+who are free or have yet to propose to every woman. If no man is free, then everybody is matched.
+If a man has proposed to every woman, then every woman should have been proposed to at least once.
+This means that every woman is paired because they must remain paired after being proposed to once.
+We prove that this results in a perfect matching with no strong instability by contradiction. Assume
+that this algorithm produces a matching \(S\) with a strong instability. Thus there exists the pairs
+\((m,w)\in S\) and \((m^\prime,w^\prime)\in S\) where \(m\) prefers \(w^\prime\) to \(w\) and where
+\(w^\prime\) prefers \(m\) to \(m^\prime\). Then \(m\) has already asked \(w^\prime\) to be engaged
+before asking \(w\) because he asks in order of decreasing preference. Afterwards, \(m^\prime\) has asked
+\(w^\prime\) to be engaged, causing her to cancel the engagement with \(m\) because she prefers \(m^\prime\)
+to \(m\). This is a contradiction because \(w^\prime\) prefers \(m\) to \(m^\prime\) in order for there to
+be a strong instability. Thus no strong instability can occur.
+
+\paragraph{b)}
+
+Here is a set of two men and two women with preference lists where any perfect matching always results in a
+weak instability. Man \(m_1\) prefers \(w_1\) to \(w_2\). Man \(m_2\) prefers \(w_1\) to \(w_2\). Woman
+\(w_1\) prefers \(m_1\) and \(m_2\) equally. Woman \(w_2\) prefers \(m_1\) and \(m_2\) equally. There are only
+two perfect matchings. The first is the perfect matching \((m_1,w_1), (m_2,w_2)\). A weak instability occurs because \(m_2\)
+prefers \(w_1\) to \(w_2\) and \(w_1\) is indifferent between \(m_2\) and \(m_1\). The second is the perfect matching
+\((m_1,w_2), (m_2,w_1)\). A weak instability occurs because \(m_1\) prefers \(w_1\) to \(w_2\) and \(w_1\) is
+indifferent between \(m_1\) and \(m_2\).
+
+\pagebreak
+
+\section*{Chapter 1, Problem 8}
+
+The following preference list allows for a switch that would improve the partner of a woman \(w_1\) who switched preferences.
+
+\[
+        \begin{array}{cccc}
+                \text{person} & 1\text{st pref.} & 2\text{nd pref.} & 3\text{rd pref.} \\
+                m_1 & w_1 & w_3 & w_2\\
+                m_2 & w_1 & w_2 & w_3\\
+                m_3 & w_3 & w_1 & w_2\\
+                w_1 & m_3 & m_1 & m_2\\
+                w_2 & m_2 & m_3 & m_1\\
+                w_3 & m_1 & m_3 & m_2
+        \end{array}
+\]
+This results in the stable matching \(S=\left\{(m_1,w_1),(m_2,w_2),(m_3,w_3)\right\}\). If \(w_1\) switched \(m_1\) and \(m_2\), this
+would result in the stable matching \(S^\prime=\left\{(m_1,w_3),(m_2,w_2),(m_3,w_1)\right\}\). This is beneficial to \(w_1\).
+
+\pagebreak
+
+\section*{Chapter 2, Problem 4}
+
+\begin{enumerate}
+        \item \(g_1(n)=2^{\sqrt{\log n}}\)
+        \item \(g_3(n)=n(\log n)^3\)
+        \item \(g_4(n)=n^\frac{4}{3}\)
+        \item \(g_5(n)=n^{\log n}\)
+        \item \(g_2(n)=2^n\)
+        \item \(g_7(n)=2^{n^2}\)
+        \item \(g_6(n)=2^{2^n}\)
+\end{enumerate}
+
+\pagebreak
+
+\section*{Chapter 2, Problem 5}
+
+\paragraph{a)}
+
+True. \(\log_2(n)\) is strictly increasing on \((0,\infty)\). As \(f(n)\) grows
+large, \(f(n)<cg(n)\) for some constant \(c\). Thus
+\[\log_2 f(n)<\log_2 cg(n)=\log_2 g(n) + \log_2(c)\]
+We can ignore the constant value because it does not affect the growth rate at
+all, and so \(\log_2 f(n)\) is \(O(\log_2 g(n))\).
+
+\paragraph{b)}
+
+False. \(f(n)=x\) and \(g(n)=\frac{x}{2}\). Then \(f(n)\) is \(O(g(n))\) but 
+\(2^x\) is not \(O(2^\frac{x}{2})\).
+
+\paragraph{c)}
+
+True. We have that \(f(n)<cg(n)\) for some constant \(c\) as \(n\) grows large. Thus
+\[f(n)^2<c^2g(n)^2\]
+Because \(c^2\) is just a constant, we have that \(f(n)^2\) is \(O(g(n)^2)\).
+
+\end{document}
