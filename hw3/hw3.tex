@@ -8,13 +8,73 @@
 
 \section*{Chapter 8, Problem 15}
 
+We will show that the Nearby Electromagnetic Observation problem is NP-complete by first showing
+that a solution can be checked in polynomial time, then by showing that the Vertex Cover problem reduces
+to the Nearby Electromagnetic Observation problem.
+
+To show that a solution can be checked in polynomial time, we show that we can verify whether a set of locations is
+sufficient in polynomial time. Assume there are \(n\) frequencies and \(m\) locations.
+Given a set of locations \(L^\prime\) with size \(k\leq m\) that form a sufficient set for the Nearby Electromagnetic Observation problem, we can
+check whether or not \(L^\prime\) is correct by going through each of \(b\) interference sources \((F_i, L_i)\) for \(1\leq i\leq b\).
+Begin with a set \(P\) of at most size \(nm\)\ containing all pairs \((f_j, l_k)\) of locations in \(L^\prime\) to all frequencies.
+For each interference source, if a location is blocked from a frequency remove the corresponding pair from \(P\).
+Then check that the number of unique frequencies in \(P\) is equal to \(j\). If this is true \(L^\prime\) is a solution
+to the Nearby Electromagnetic Observation problem. This algorithm has the time complexity \(O(bnm)\), proving that the
+Nearby Electromagnetic Observation problem can be verified in polynomial time. Thus it is \(NP\).
+
+To show that Vertex Cover\(\leq_P\)Nearby Electromagnetic Observation, we begin by noting that the Nearby Electromagnetic Observation
+problem is similar to finding the Vertex Cover of a bipartite graph, with one set of vertices \(F\) and another set of vertices \(L\). Thus we can reduce
+the Vertex Cover problem to the Nearby Electromagnetic Observation problem by converting a graph \(G=(V,E)\) to a bipartite graph. We do this by splitting
+each edge \(e\in E\) and inserting a vertex. Let this inserted vertex \(f\) be in the set \(F\). Each vertex \(f\) only connects to vertices in \(V\), thus
+we have a bipartite graph. \(V\) corresponds to the locations in the Nearby Electromagnetic Observation problem and \(F\) corresponds to the frequencies.
+Create a set of interference sources such that each frequency can only be received by two locations in \(V\). These two locations correspond to the edges in the original
+graph \(G\). Thus for the Vertex Cover problem, we can construct a set of frequencies, locations, and interference sources that represent \(G\). Then solving
+the Nearby Electromagnetic Observation problem gives a set of locations that are sufficient for the representation of \(G\). This set of locations also form
+a vertex cover for \(G\), as each frequency will be accessed. The frequencies correspond to the edges in \(G\), thus we obtain a set of vertices that cover
+each edge. This gives us a solution to the vertex cover problem. Thus
+\[\text{Vertex Cover}\leq_P\text{Nearby Electromagnetic Observation}\]
+which proves that the Nearby Electromagnetic Observation problem is NP-complete.
+
 \pagebreak
 
 \section*{Chapter 8, Problem 18}
 
+
+
 \pagebreak
 
 \section*{Chapter 8, Problem 22}
+
+First we need to split up \(G=(V,E)\) into connected subgraphs. Do this as follows
+
+\begin{verbatim}
+initialize an empty set S of all subgraphs
+for all v in V
+    create a subgraph g
+    add v to subgraph g
+    remove v from V
+    for all v_graph in subgraph g
+        for all e in E
+            if e connects v_graph with v_other
+                add e to subgraph g
+                add v_other to subgraph g
+                remove e from E
+                remove v_other from V
+            endif
+        endfor
+    endfor
+    add subgraph g to S
+endfor
+return S
+\end{verbatim}
+
+Because this algorithm contains three loops over elements of \(G\), it is \(O(G^3)\), which is polynomial time.
+
+Then for each subgraph \(g\in S\), call \(A\) beginning with \(k=1\) on each subgraph and increasing \(k\) by one
+each iteration until \(A\) returns ``no". Then we know the independent set \(g\) has a maximum independent set of size
+\(k-1\). Summing the maximum independent set sizes of all subsets yields a result \(x\), the maximum independent set size
+of \(G\). This allows us to solve the Independent Set Problem in polynomial time, as the number of calls to \(A\) is
+\(O(G)\).
 
 \pagebreak
 
