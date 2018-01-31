@@ -48,7 +48,7 @@ each of \(t\) issues \(I_i\) for \(1\leq i\leq t\), counting the \(n\) member's 
 then checking \(|S|\) votes from the subset to see if they match the original. This algorithm has the time complexity \(O(tn)\),
 so a solution to the Decisive Subset problem can be checked in polynomial time. Thus the Decisive Subset problem is NP.
 
-To show that Vertex Cover\(\leq_P\)Decisive Subset, we attempt to transform an arbitrary graph \(G=(V,E)\) into an instance of the
+To show that Vertex Cover\(\leq_P\)Decisive Subset, we attempt to transform an arbitrary undirected graph \(G=(V,E)\) into an instance of the
 Decisive Subset problem, and show that a solution to the Decisive Subset problem yields a vertex cover. Let there be \(n\) vertices
 and \(t\) edges in \(G\). We construct an instance of the Decisive Subset problem by making a voting member \(m_i\) for
 \(1\leq i\leq n\) correspond to the vertex \(v_i\) in \(G\). We make an issue \(I_j\) for \(1\leq j\leq t\) correspond to the
@@ -94,24 +94,24 @@ Because this algorithm contains three loops over elements of \(G\), it is \(O(G^
 Then for each subgraph \(g\in S\), call \(A\) beginning with \(k=1\) on each subgraph and increasing \(k\) by one
 each iteration until \(A\) returns ``no". Then we know the independent set \(g\) has a maximum independent set of size
 \(k-1\). Summing the maximum independent set sizes of all subsets yields a result \(x\), the maximum independent set size
-of \(G\). This allows us to solve the Independent Set Problem in polynomial time, as the number of calls to \(A\) is
+of \(G\). This allows us to solve the Independent Set problem in polynomial time, as the number of calls to \(A\) is
 \(O(G)\).
 
 \pagebreak
 
 \section*{Chapter 8, Problem 31}
 
-We will show that the Feedback Set problem is NP-complete by first showing
+We will show that the Undirected Feedback Set problem is NP-complete by first showing
 that a solution can be checked in polynomial time, then by showing that the 3SAT problem reduces
-to the Feedback Set problem.
+to the Undirected Feedback Set problem.
 
-A solution \(X\) to the Feedback Set problem can be checked in polynomial time by finding \(G-X\),
+A solution \(X\) to the Undirected Feedback Set problem can be checked in polynomial time by finding \(G-X\),
 then performing a breadth-first search on \(G-X\) to check for cycles. A cycle is found if an already
 visited vertex is connected to the vertex being searched. In the worst case scenario, no cycle is found and
 every edge and vertex is traversed. This only requires linear time, as we simply step through the graph in the case
-that no cycle is detected. Because our breadth-first search is \(O(G)\), the Feedback Set problem is \(O(G)\).
+that no cycle is detected. Because our breadth-first search is \(O(G)\), the Undirected Feedback Set problem is \(O(G)\).
 
-We reduce the 3SAT problem to the Feedback Set problem by constructing cycles for each variable and clause. Let there be
+We reduce the 3SAT problem to the Undirected Feedback Set problem by constructing cycles for each variable and clause. Let there be
 \(n\) variables \(x_i\) for \(1\leq i \leq n\) and \(m\) clauses \(C_j\) for \(1\leq j\leq m\) in our 3SAT problem. For each
 variable, we construct three vertices labeled \(x_i=0\), \(x_i=1\), and \(x_i=\text{any}\), and connect them all to each other to
 form a triangle. So we have \(n\) cycles, meaning that if we were to produce a feedback set \(X\), it must have at least \(n\)
@@ -119,7 +119,7 @@ vertices. The feedback set of size \(n\) must contain a unique value for each va
 three edges connecting each of the three variables in the clause. For example if a clause is \((x_1,\overline{x_2},x_3)\), draw
 edges \((x_1=1, x_2=0)\), \((x_2=0, x_3=1)\), and \((x_3=1, x_1=1)\). Then the clause forms a cycle that is broken if and only
 if one of its element is in the feedback set \(X\), satisfying that clause. This completes our construction of \(G=(V,E)\) for our
-Feedback Set problem. We then ask if there is a feedback set of size at most \(k=n\). If yes, we know that there also exists a
+Undirected Feedback Set problem. We then ask if there is a feedback set of size at most \(k=n\). If yes, we know that there also exists a
 satisfying assignment for our 3SAT problem, as this means that there is a unique value for each variable \(x_i\) such that each clause
 is satisfied, because if a clause is not satisfied then it would form a cycle in \(G-X\). The vertices in \(X\) give a solution to the
 3SAT problem, proving that we can solve the 3SAT problem in polynomial time if we are given a polynomial time algorithm for the Feedback
@@ -130,5 +130,33 @@ and so Feedback Set is NP-complete.
 \pagebreak
 
 \section*{Chapter 8, Problem 36}
+
+We will show that the Daily Special Scheduling problem is NP-complete by first showing
+that a solution can be checked in polynomial time, then by showing that the Undirected Hamiltonian Path problem reduces
+to the Daily Special Scheduling problem.
+
+To verify that a solution \(X\) of the Daily Special Scheduling problem costs at most \(x\) dollars, simply take the ordering
+\(X\) of the \(k\) specials, traverse the ordering, and buy the necessary ingredients for each special. Make sure to keep track of
+each of the leftover ingredients along the way that are still good enough to use. At the end, total the ingredients bought and multiply by the cost
+of the ingredients bought to find the total cost of the ordering \(X\). If this cost is less than or equal to \(x\), the solution
+\(X\) is valid. Because we have \(k\) specials and \(n\) ingredients, This algorithm has the time complexity \(O(kn)\), and so the Daily
+Special Scheduling problem is NP.
+
+We will make some simplifying assumptions about the Daily Special Scheduling problem to help us reduce the Undirected Hamiltonian Path problem
+to the Daily Special Scheduling problem. Let every special have the set of required fresh ingredients be the set \(F=\emptyset\),
+so that no special requires fresh ingredients. Let the unit size \(s(j)=2\) for ingredient \(I_j\), so they all must be bought in multiples
+of \(2\) grams. Let each unit cost \(c(j)=1\) dollar. Let each ingredient last for \(t(j)=2\) days, so that they can only be used on their
+date of purchase and on the following day. Now we wish to convert an arbitrary undirected graph \(G=(V,E)\) into an instance of the Daily
+Special Scheduling problem. We wish to make the \(k\) vertices \(v_i\) for \(1\leq i\leq k\) correspond to the specials \(s_i\). For every
+special \(s_i\), we require \(1\) gram of each of \(k\) unique ingredients \(I_{ij}\) for \(1\leq j\leq k\). Thus we have created a \(k^2\) long
+list of ingredients. In this state, the total amount of money required to produce all the specials is \(s(j)c(j)k^2=2k^2\). For each edge
+\(e=(v_a,v_b)\) in our original graph \(G\), we now change ingredient \(I_{ab}\) to be the same as \(I_{ba}\). Effectively, this ties together
+the specials \((s_a,s_b)\). Instead of only using \(1\) gram out of the \(2\) grams of \(I_{ba}\) that we purchase, we can arrange \(s_a\) and
+\(s_b\) sequentially so that they can both use the same ingredient, saving \(1\) dollar. If the specials are ordered in such a way that every
+special after the first saves \(1\) dollar, our total cost will be \(2k^2-k+1\) dollars. If we can find an ordering of \(k\) specials that costs
+at most \(2k^2-k+1\) dollars using a solution to the Daily Special Scheduling problem, we have then found a Hamiltonian path through the undirected
+graph \(G\). Because every special \(s_i\) is scheduled with a cost of at most \(2k^2-k+1\) dollars, we know that every vertex \(v_i\) can be visited
+in a corresponding manner such that an edge connects each vertex. Thus the Undirected Hamiltonian Path problem reduces to the Daily Special Scheduling
+problem. This proves that the Daily Special Scheduling problem is NP-complete.
 
 \end{document}
