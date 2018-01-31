@@ -101,6 +101,32 @@ of \(G\). This allows us to solve the Independent Set Problem in polynomial time
 
 \section*{Chapter 8, Problem 31}
 
+We will show that the Feedback Set problem is NP-complete by first showing
+that a solution can be checked in polynomial time, then by showing that the 3SAT problem reduces
+to the Feedback Set problem.
+
+A solution \(X\) to the Feedback Set problem can be checked in polynomial time by finding \(G-X\),
+then performing a breadth-first search on \(G-X\) to check for cycles. A cycle is found if an already
+visited vertex is connected to the vertex being searched. In the worst case scenario, no cycle is found and
+every edge and vertex is traversed. This only requires linear time, as we simply step through the graph in the case
+that no cycle is detected. Because our breadth-first search is \(O(G)\), the Feedback Set problem is \(O(G)\).
+
+We reduce the 3SAT problem to the Feedback Set problem by constructing cycles for each variable and clause. Let there be
+\(n\) variables \(x_i\) for \(1\leq i \leq n\) and \(m\) clauses \(C_j\) for \(1\leq j\leq m\) in our 3SAT problem. For each
+variable, we construct three vertices labeled \(x_i=0\), \(x_i=1\), and \(x_i=\text{any}\), and connect them all to each other to
+form a triangle. So we have \(n\) cycles, meaning that if we were to produce a feedback set \(X\), it must have at least \(n\)
+vertices. The feedback set of size \(n\) must contain a unique value for each variable \(x_i\). For each clause \(C_j\), create
+three edges connecting each of the three variables in the clause. For example if a clause is \((x_1,\overline{x_2},x_3)\), draw
+edges \((x_1=1, x_2=0)\), \((x_2=0, x_3=1)\), and \((x_3=1, x_1=1)\). Then the clause forms a cycle that is broken if and only
+if one of its element is in the feedback set \(X\), satisfying that clause. This completes our construction of \(G=(V,E)\) for our
+Feedback Set problem. We then ask if there is a feedback set of size at most \(k=n\). If yes, we know that there also exists a
+satisfying assignment for our 3SAT problem, as this means that there is a unique value for each variable \(x_i\) such that each clause
+is satisfied, because if a clause is not satisfied then it would form a cycle in \(G-X\). The vertices in \(X\) give a solution to the
+3SAT problem, proving that we can solve the 3SAT problem in polynomial time if we are given a polynomial time algorithm for the Feedback
+Set problem. Thus
+\[\text{3SAT}\leq_p \text{Feedback Set}\]
+and so Feedback Set is NP-complete.
+
 \pagebreak
 
 \section*{Chapter 8, Problem 36}
