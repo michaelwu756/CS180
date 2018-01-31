@@ -151,12 +151,13 @@ Special Scheduling problem. We wish to make the \(k\) vertices \(v_i\) for \(1\l
 special \(s_i\), we require \(1\) gram of each of \(k\) unique ingredients \(I_{ij}\) for \(1\leq j\leq k\). Thus we have created a \(k^2\) long
 list of ingredients. In this state, the total amount of money required to produce all the specials is \(s(j)c(j)k^2=2k^2\). For each edge
 \(e=(v_a,v_b)\) in our original graph \(G\), we now change ingredient \(I_{ab}\) to be the same as \(I_{ba}\). Effectively, this ties together
-the specials \((s_a,s_b)\). Instead of only using \(1\) gram out of the \(2\) grams of \(I_{ba}\) that we purchase, we can arrange \(s_a\) and
-\(s_b\) sequentially so that they can both use the same ingredient, saving \(1\) dollar. If the specials are ordered in such a way that every
-special after the first saves \(1\) dollar, our total cost will be \(2k^2-k+1\) dollars. If we can find an ordering of \(k\) specials that costs
-at most \(2k^2-k+1\) dollars using a solution to the Daily Special Scheduling problem, we have then found a Hamiltonian path through the undirected
-graph \(G\). Because every special \(s_i\) is scheduled with a cost of at most \(2k^2-k+1\) dollars, we know that every vertex \(v_i\) can be visited
-in a corresponding manner such that an edge connects each vertex. Thus the Undirected Hamiltonian Path problem reduces to the Daily Special Scheduling
-problem. This proves that the Daily Special Scheduling problem is NP-complete.
+the specials \((s_a,s_b)\). Instead of only using \(1\) gram out of the \(2\) grams of \(I_{ba}\) and \(1\) gram out of the \(2\) grams of \(I_{ab}\) that
+we purchase, we can arrange \(s_a\) and \(s_b\) sequentially so that they can both use the same ingredient, saving \(2\) dollars. If the specials
+are ordered in such a way that every special after the first saves \(2\) dollar, our total cost will be \(2k^2-2k+2\) dollars. If we can find an
+ordering of \(k\) specials that costs at most \(2k^2-2k+2\) dollars using a solution to the Daily Special Scheduling problem, we have then found
+a Hamiltonian path through the undirected graph \(G\). Because every special \(s_i\) is scheduled with a cost of at most \(2k^2-2k+2\) dollars,
+we know that every vertex \(v_i\) can be visited in a corresponding manner such that an edge connects each vertex. Thus
+\[\text{Undirected Hamiltonian Path}\leq_p \text{Daily Special Scheduling}\]
+This proves that the Daily Special Scheduling problem is NP-complete.
 
 \end{document}
