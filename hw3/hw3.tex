@@ -20,7 +20,7 @@ Begin with a set \(P\) of at most size \(nm\)\ containing all pairs \((f_j, l_k)
 For each interference source, if a location is blocked from a frequency remove the corresponding pair from \(P\).
 Then check that the number of unique frequencies in \(P\) is equal to \(j\). If this is true \(L^\prime\) is a solution
 to the Nearby Electromagnetic Observation problem. This algorithm has the time complexity \(O(bnm)\), proving that the
-Nearby Electromagnetic Observation problem can be verified in polynomial time. Thus it is \(NP\).
+Nearby Electromagnetic Observation problem can be verified in polynomial time. Thus it is NP.
 
 To show that Vertex Cover\(\leq_P\)Nearby Electromagnetic Observation, we begin by noting that the Nearby Electromagnetic Observation
 problem is similar to finding the Vertex Cover of a bipartite graph, with one set of vertices \(F\) and another set of vertices \(L\). Thus we can reduce
@@ -39,7 +39,28 @@ which proves that the Nearby Electromagnetic Observation problem is NP-complete.
 
 \section*{Chapter 8, Problem 18}
 
+We will show that the Decisive Subset problem is NP-complete by first showing
+that a solution can be checked in polynomial time, then by showing that the Vertex Cover problem reduces
+to the Decisive Subset problem.
 
+A solution \(S\) to the Decisive Subset problem can be checked in polynomial time by iterating linearly through
+each of \(t\) issues \(I_i\) for \(1\leq i\leq t\), counting the \(n\) member's votes to come up with the original vote,
+then checking \(|S|\) votes from the subset to see if they match the original. This algorithm has the time complexity \(O(tn)\),
+so a solution to the Decisive Subset problem can be checked in polynomial time. Thus the Decisive Subset problem is NP.
+
+To show that Vertex Cover\(\leq_P\)Decisive Subset, we attempt to transform an arbitrary graph \(G=(V,E)\) into an instance of the
+Decisive Subset problem, and show that a solution to the Decisive Subset problem yields a vertex cover. Let there be \(n\) vertices
+and \(t\) edges in \(G\). We construct an instance of the Decisive Subset problem by making a voting member \(m_i\) for
+\(1\leq i\leq n\) correspond to the vertex \(v_i\) in \(G\). We make an issue \(I_j\) for \(1\leq j\leq t\) correspond to the
+edge \(e_j\) in \(G\). For each issue \(I_j\), make the member \(m_i\) abstain from voting unless \(e_j\) connects to \(v_i\). If
+\(v_i\) is connected to \(e_j\), have member \(m_i\) vote yes. So for every issue, two members will vote yes and the rest will abstain.
+This yields a complete instance of a Decisive Subset problem, as we have determined every issue, member, and vote necessary. If we have a
+solution \(S\) to the Decisive Subset problem for a given \(k\), on every issue the members in \(S\) must have at least one person vote yes,
+because the original vote consisted of all yes's on every issue. Thus our decisive subset corresponds to a vertex cover for
+the graph \(G\), because each member \(m_i\in S\) corresponds to a vertex \(v_i\in V\) and each issue \(I_j\) corresponds to an edge \(e_j\).
+Because every issue gets at least one yes vote, every edge is covered by one vertex. This results from us making member \(m_i\) vote yes on an
+issue \(I_j\) only if vertex \(v_i\) is connected to edge \(e_j\). Thus the Vertex Cover problem reduces to the Decisive Subset problem. Since
+Vertex Cover is NP-complete, Decisive Subset must be NP-complete as well.
 
 \pagebreak
 
