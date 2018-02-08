@@ -124,10 +124,10 @@ any valid pairing, we can always assign the earliest event with time \(x_1\) to 
 with the earliest end time \(t_a+e_a\) . If \(x_1\) is not assigned to the time stamp \((t_a,e_a)\) in \(S\),
 let it be assigned to the timestamp \((t_b,e_b)\) and let \(x_a\) be assigned to \((t_a,e_a)\). Then we try to swap
 \(x_1\) and \(x_a\) so that they are assigned to \((t_a,e_a)\) and \((t_b,e_b)\), respectively. We know that \(x_1\) can be
-assigned to \((t_a,e_a)\), since it contains \(x_1\) by definition. Additionally, we know that \(x_1<x_a\), because \(x_1\)
-is the earliest event. But also \(t_b-e_b<x_1<x_a\), since \((t_b,e_b)\) contains \(x_1\). Finally, we also have
-\(x_a<t_a+e_a<t_b+e_b\), since \((t_a,e_a)\) has an earlier end time than \((t_b,e_b)\). Thus we have
-\[t_b-e_b<x_a<t_b+e_b\]
+assigned to \((t_a,e_a)\), since it contains \(x_1\) by definition. Additionally, we know that \(x_1\leq x_a\), because \(x_1\)
+is the earliest event. But also \(t_b-e_b\leq x_1\leq x_a\), since \((t_b,e_b)\) contains \(x_1\). Finally, we also have
+\(x_a\leq t_a+e_a\leq t_b+e_b\), since \((t_a,e_a)\) has an earlier end time than \((t_b,e_b)\). Thus we have
+\[t_b-e_b\leq x_a\leq t_b+e_b\]
 so \(x_a\) can be validly assigned to \((t_b,e_b)\), and we can swap \(x_1\) and \(x_a\). This results in another
 valid pairing. We then mark \(x_1\) and \((t_a,e_b)\) as permanently assigned, and only consider the remaining events. This forms
 a subset of our original problem. We continue to assign each leading event \(x_i\) to the time stamp that contains \(x_i\)
@@ -138,5 +138,27 @@ algorithm is correct.
 \pagebreak
 
 \section*{Chapter 4, Problem 30}
+
+Let \(Z=(X\cup Y)\), so that the non terminal nodes in our minimum-weight Steiner tree \(T\) are contained in the set \(Y\). Call \(Y\)
+the set of Steiner nodes. Observe that any Steiner node \(a\) in \(T\) must have at least \(3\) edges connected to it. If \(a\) has one edge,
+we can simply remove \(a\) from \(Y\) to produce another valid Steiner tree with a lower weight. If \(a\) has two edges, we can remove \(a\)
+from \(Y\) and draw an edge between the two neighbors of \(a\). This produces another valid Steiner tree with a weight less than or equal to
+our original Steiner tree, because our graph \(G\) obeys the triangle inequality. Thus all \(a\in Y\) have a degree of at least \(3\). \(T\)
+is also connected, so we know that each terminal node in \(X\) must have at least degree \(1\). So the sum of degrees \(d\) over \(T\)
+is \(d\geq 3|Y|+|X|\). Because our tree \(T\) must have \(|Z|-1\) edges, the sum of its degrees is \(d=2|Z|-2\). Then
+\begin{align*}
+        2|Z|-2&\geq 3|Y|+|X|\\
+        2|X|+2|Y|-2&\geq 3|Y|+|X|\\
+        |X|-|Y|-2&\geq 0\\
+        |Y|&\leq |X|-2
+\end{align*}
+So the number of Steiner nodes \(|Y|\) must be at least two less than the number \(k=|X|\) of terminal nodes. Then we can find the minimum weight
+Steiner tree on \(X\) by iterating over every set \(Y\) of Steiner nodes in \(G\) with the property \(|Y|\leq k-2\) and finding the smallest
+minimum spanning tree for \(Z=(X\cup Y)\). There are
+\[\sum_{i=0}^{k-2}\binom{|G-X|}{i}=\sum_{i=0}^{k-2}\binom{n-k}{i}\]
+such sets. This sum is bounded by
+\[\sum_{i=0}^{k-2}\binom{n-k}{i}\leq\sum_{i=0}^{k-2}n^i = 1 + n + n^2 + \ldots + n^{k-2}\]
+Thus the number of sets scales in \(O(n^{O(k)})\) time. The minimum spanning tree algorithm can run in \(O(n^2)\) time, so multiplying these time
+complexities together yields a time complexity of \(O(n^{O(k)})\).
 
 \end{document}
