@@ -1,0 +1,123 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\begin{document}
+\title{Computer Science 180, Homework 5}
+\date{February 15th, 2018}
+\author{Michael Wu\\UID: 404751542}
+\maketitle
+
+\section*{Chapter 4, Problem 25}
+
+\pagebreak
+
+\section*{Chapter 4, Problem 28}
+
+Because we must have \(k\) cables from \(X\), we can try every subset of cables of size \(k\) in polynomial time and see if
+they can form a spanning tree. Assume there are \(a\) edges from company \(X\). We can generate
+\[\binom{a}{k}\]
+instances 
+
+\pagebreak
+
+\section*{Chapter 6, Problem 4}
+
+\paragraph{a)}
+
+Let \(M=10\). Then the following operating cost table
+\begin{center}
+        \begin{tabular}{c | c c}
+                & Month 1 & Month 2\\
+                \hline
+                NY & 1 & 3\\
+                SF & 2 & 1\\
+        \end{tabular}
+\end{center}
+results in the given algorithm returning \{NY, SF\} for a cost of \(12\). The correct plan to minimize
+cost should be \{SF, SF\} for a cost of \(3\).
+
+\paragraph{b)}
+
+Let \(M=10\). Then the following operating cost table
+\begin{center}
+        \begin{tabular}{c | c c c c}
+                & Month 1 & Month 2 & Month 3 & Month 4\\
+                \hline
+                NY & 1 & 100 & 1 & 100\\
+                SF & 100 & 1 & 100 & 1 \\
+        \end{tabular}
+\end{center}
+results in the only optimal plan \{NY, SF, NY, SF\} for a cost of \(34\). Every optimal plan must move at least
+\(3\) times, because the cost of moving is outweighed by the high cost of staying.
+
+\paragraph{c)}
+
+Let \(C(a,b)\) be the cost of operating in city \(a\) during month \(b\). Construct two arrays \(N[i,j]\) and \(S[i,j]\)
+that return the cost of operating in New York or San Francisco, respectively, from months \(i\) to \(j\) using the following algorithm.
+\begin{verbatim}
+for x from 1 to n
+    for y from x to n
+        if (y==x)
+            N[x,y]==C(NY,y)
+            S[x,y]==C(SF,y)
+        else
+            N[x,y]==N[x,y-1]+C(NY,y)
+            S[x,y]==S[x,y-1]+C(SF,y)
+return N, S
+\end{verbatim}
+This step runs in \(O(n^2)\) time, as it loops twice over \(n\). Then we define a function \(D(i)\) that gives the minimum operating cost
+after \(i\) months. We also define a function \(E(i)\) that gives the end city after executing a minimum operating plan for \(i\) months.
+Because there may be multiple ways to plan optimally such that either cities may be the end cities,
+\(E(i)\in\{\text{NY},\text{SF},\text{Either}\}\). Let \(M\) be the cost of moving. Then we use the following algorithm to find the
+optimal cost after \(n\) months.
+\begin{verbatim}
+E(0)=Either
+D(0)=0
+for x from 1 to n
+    minCost = infinity
+    endCity = Either
+    for y from 0 to x-1
+        nyMoveCost=0
+        sfMoveCost=0
+        if (E(y)==NY)
+            sfMoveCost=M
+        else if (E(y)==SF)
+            nyMoveCost=M
+        if (D(y)+N(y+1,x)+nyMoveCost<minCost)
+            minCost=D(y)+N(y+1,x)+nyMoveCost
+            endCity=NY
+        if (D(y)+S(y+1,x)+sfMoveCost<minCost)
+            minCost=D(y)+S(y+1,x)+sfMoveCost
+            endCity=SF
+        if ((D(y)+N(y+1,x)+nyMoveCost==minCost && endCity==SF) ||
+            (D(y)+S(y+1,x)+sfMoveCost==minCost && endCity==NY))
+            endCity=Either
+    D(x)=minCost
+    E(x)=endCity
+return D(n)
+\end{verbatim}
+This algorithm is \(O(n^2)\) because it loops over \(n\) twice. It is correct because it iteratively generates the next minimum cost for months \(1,\ldots,n\)
+using a recurrence relation
+\[D(x)=\begin{cases} 0 & x=0\\ \min\limits_{y=0}^{x-1} (D(y)+N(y+1,x)+M_N,D(y)+S(y+1,x)+M_S) & x\geq1 \end{cases}\]
+where \(M_N\) and \(M_S\) are equal to \(M\) if the optimal plan \(D(y)\) requires the company to operate in SF or NY, respectively. This is valid because given
+optimal plan \(P\) of length \(n\) months, if there are \(m\leq n\) months before the final move, the subset of \(P\) from months \(1\) to \(m\) must be an
+optimal plan \(P^\prime\) for the first \(m\) months as well. If \(P^\prime\) was not optimal, we could replace it with a lower cost plan, which is a contradiction
+as this means we can reduce the cost of \(P\) by rearranging it. Therefore it makes sense to only calculate the cost after a final move and minimize this value iteratively.
+We check if a move is necessary by keeping track of whether or not a minimum cost can be achieved while ending in a particular city using \(E(x)\).
+
+\pagebreak
+
+\section*{Chapter 6, Problem 6}
+
+First, greedily try to fit as many words as possible on each line such that it still remains valid. Let this
+greedy formatting have \(x\) lines. Then the sum of slacks will be
+\[xL-\left(\sum_{i=1}^n (c_i + 1) - x\right) = x(L+1)-n-\sum_{i=1}^n c_i\]
+We wish to minimize the sum of squares of the slacks, which occurs when each slack is approximately the same.
+But we also want to keep the same number of lines \(x\), otherwise we add \(L+1\) to the total slack, which is
+bad. So we 
+
+\pagebreak
+
+\section*{Chapter 6, Problem 12}
+
+\end{document}
