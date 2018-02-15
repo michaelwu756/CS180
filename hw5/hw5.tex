@@ -58,11 +58,11 @@ that return the cost of operating in New York or San Francisco, respectively, fr
 for x from 1 to n
    for y from x to n
       if (y==x)
-         N(x,y)==C(NY,y)
-         S(x,y)==C(SF,y)
+         N(x,y)=C(NY,y)
+         S(x,y)=C(SF,y)
       else
-         N(x,y)==N(x,y-1)+C(NY,y)
-         S(x,y)==S(x,y-1)+C(SF,y)
+         N(x,y)=N(x,y-1)+C(NY,y)
+         S(x,y)=S(x,y-1)+C(SF,y)
 return N, S
 \end{verbatim}
 This step runs in \(O(n^2)\) time, as it loops twice over \(n\). Then we define a function \(D(i)\) that gives the minimum operating cost
@@ -109,12 +109,71 @@ We check if a move is necessary by keeping track of whether or not a minimum cos
 
 \section*{Chapter 6, Problem 6}
 
-First, greedily try to fit as many words as possible on each line such that it still remains valid. Let this
-greedy formatting have \(x\) lines. Then the sum of slacks will be
-\[xL-\left(\sum_{i=1}^n (c_i + 1) - x\right) = x(L+1)-n-\sum_{i=1}^n c_i\]
-We wish to minimize the sum of squares of the slacks, which occurs when each slack is approximately the same.
-But we also want to keep the same number of lines \(x\), otherwise we add \(L+1\) to the total slack, which is
-bad. So we 
+First we wish to generate an array \(S(i,j)\) of squared slacks for every line containing the words from word \(i\) to \(j\).
+The slack of such a line is given by
+\[L-\sum_{a=i}^{j-1}(c_a+1)-c_j=L-j+i-\sum_{a=i}^{j}c_a\]
+Let our array be
+\[S(i,j)=\begin{cases}
+        \infty & \text{if } i<j\\
+        \infty & \text{if } L-j+i-\sum_{a=i}^{j}c_i<0\\
+        (L-j+i-\sum_{a=i}^{j}c_a)^2 & \text{otherwise}
+\end{cases}\]
+Let \(C(n)\) be the character count \(c_n\). We begin by calculating all \(R(i,j)=\sum_{a=i}^{j}c_a\) as follows
+\begin{verbatim}
+for i from 1 to n
+   for j from i to n
+      if (j==i)
+         R(i,j)=C(j)
+      else
+         R(i,j)=R(i,j-1)+C(j)
+return R
+\end{verbatim}
+This algorithm is \(O(n^2)\) as it loops over \(n\) twice. Then we can generate \(S(i,j)\) as follows
+\begin{verbatim}
+for i from 1 to n
+   for j from i to n
+      if (L-j+i-R(i,j)<0)
+         S(i,j)=infinity
+      else
+         S(i,j)=(L-j+i-R(i,j))^2
+return S
+\end{verbatim}
+This is also \(O(n^2)\) because it loops over \(n\) twice.
+
+Now to minimize the squared slacks, consider the words in the last line from \(i\) to \(j\).
+Given a breakpoint \(i\) for the first word of the last line, we can compute the minimum slack through
+the recurrence
+\[\operatorname{OPT}(j)=\operatorname{OPT}(i-1)+S(i,j)\]
+because the slack of the last line will be fixed. This means that we have a subproblem of size \(i-1\) that
+we must minimize to obtain the optimal solution given this restraint. This leads to the overall recurrence
+\[\operatorname{OPT}(j)=\min_{i=1}^j(\operatorname{OPT}(i-1)+S(i,j))\]
+with \(\operatorname{OPT}(0)=0\). We compute \(\operatorname{OPT}(n)\) to find the minimum square of slacks.
+We can keep track of the last word of each second to last line in order to print out a sequence of indices to
+partition \(W\) into, such that this partition minimizes the square of slacks. In full the algorithm is as follows.
+\begin{verbatim}
+opt(0)=0
+K(0)=0
+for j from 1 to n
+   minCost = infinity
+   previousLineEnd = 0
+   for i from 1 to j
+      if (opt(i-1)+S(i,j) <= minCost)
+         minCost = opt(i-1)+S(i,j)
+         previousLineEnd = i-1
+   opt(j)=minCost
+   K(j)=previousLineEnd
+return opt(n)
+\end{verbatim}
+This is \(O(n^2)\) because it loops over \(n\) twice. It outputs the minimum squared slacks, and is correct because of the above
+recurrence relation. To output the partitions of \(W\), do
+\begin{verbatim}
+pos = n
+while (pos>0)
+   println(pos)
+   pos=K(pos)
+\end{verbatim}
+This outputs the index of the last word of each line. It has a linear runtime, because each call of \texttt{pos=K(pos)} decrements \texttt{pos}
+by at least one. Therefore the whole algorithm is \(O(n^2)\).
 
 \pagebreak
 
@@ -156,7 +215,7 @@ while (pos>0)
    println(pos)
    pos=K(pos)
 \end{verbatim}
-which traverses the array of last files, generating a sequence that has the minimum cost \(OPT(n)\).
-
+which traverses the array of last files, generating a sequence that has the minimum cost \(OPT(n)\) because \texttt{pos} must be decremented by at least
+one every iteration. Thus the entire time complexity of this algorithm is \(O(n^2)\).
 
 \end{document}
