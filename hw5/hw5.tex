@@ -52,17 +52,17 @@ results in the only optimal plan \{NY, SF, NY, SF\} for a cost of \(34\). Every 
 
 \paragraph{c)}
 
-Let \(C(a,b)\) be the cost of operating in city \(a\) during month \(b\). Construct two arrays \(N[i,j]\) and \(S[i,j]\)
+Let \(C(a,b)\) be the cost of operating in city \(a\) during month \(b\). Construct two arrays \(N(i,j)\) and \(S(i,j)\)
 that return the cost of operating in New York or San Francisco, respectively, from months \(i\) to \(j\) using the following algorithm.
 \begin{verbatim}
 for x from 1 to n
    for y from x to n
       if (y==x)
-         N[x,y]==C(NY,y)
-         S[x,y]==C(SF,y)
+         N(x,y)==C(NY,y)
+         S(x,y)==C(SF,y)
       else
-         N[x,y]==N[x,y-1]+C(NY,y)
-         S[x,y]==S[x,y-1]+C(SF,y)
+         N(x,y)==N(x,y-1)+C(NY,y)
+         S(x,y)==S(x,y-1)+C(SF,y)
 return N, S
 \end{verbatim}
 This step runs in \(O(n^2)\) time, as it loops twice over \(n\). Then we define a function \(D(i)\) that gives the minimum operating cost
@@ -119,5 +119,44 @@ bad. So we
 \pagebreak
 
 \section*{Chapter 6, Problem 12}
+
+Consider the location of the last file before the terminal file \(S_n\). If it is \(a \geq 1\) files before \(S_n\),
+then the minimum cost \(\operatorname{OPT}(n)\) given this restraint is \(\operatorname{OPT}(n-a)+c_n+\sum_{i=0}^{a-1}i\).
+This is because the cost of the placements of the files on servers earlier to \(S_{n-a}\) is not affected by files placed
+afterwards. This forms a subproblem of size \(n-a\) that we must minimize to obtain an optimal solution. This leads to the
+recurrence relation
+\begin{align*}
+        \operatorname{OPT}(n)&=\min_{1\leq i\leq n}\left(\operatorname{OPT}(n-i)+c_n+\sum_{j=0}^{i-1}j\right)\\
+        \operatorname{OPT}(n)&=\min_{1\leq i\leq n}\left(\operatorname{OPT}(n-i)+c_n+\frac{(i-1)i}{2}\right)\\
+        \operatorname{OPT}(n)&=\min_{0\leq i\leq n-1}\left(\operatorname{OPT}(i)+c_n+\frac{(n-i-1)(n-i)}{2}\right)\\
+        \operatorname{OPT}(n)&=\min_{0\leq i\leq n-1}\left(\operatorname{OPT}(i)+c_n+\binom{n-i}{2}\right)\\
+\end{align*}
+Initially we have \(\operatorname{OPT}(0)=0\). We can record the index \(i\) of the last file before the terminal file for
+each subproblem of size \(n\) in order to generate a configuration with minimum total cost. Let \(C(n)\) be the placement cost \(c_n\).
+Then in full the algorithm behaves as follows.
+\begin{verbatim}
+opt(0)=0
+K(0)=0
+for i from 1 to n
+   minCost = infinity
+   previousFileLocation = 0
+   for j from 0 to i-1
+      if (opt(j)+C(n)+(n-j)*(n-j-1)/2 <= minCost)
+         minCost = opt(j)+C(n)+(n-j)*(n-j-1)/2
+         previousFileLocation = j
+   opt(i)=minCost
+   K(i)=previousFileLocation
+return opt(n)
+\end{verbatim}
+This generates each \(\operatorname{OPT}(i)\) according to the recurrence relation above. It loops twice over \(n\), so it has a runtime of \(O(n^2)\).
+It outputs the minimum cost \(OPT(n)\). To output the indices of the servers where a copy of the file resides, simply do
+\begin{verbatim}
+pos = n
+while (pos>0)
+   println(pos)
+   pos=K(pos)
+\end{verbatim}
+which traverses the array of last files, generating a sequence that has the minimum cost \(OPT(n)\).
+
 
 \end{document}
