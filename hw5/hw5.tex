@@ -13,10 +13,26 @@
 
 \section*{Chapter 4, Problem 28}
 
-Because we must have \(k\) cables from \(X\), we can try every subset of cables of size \(k\) in polynomial time and see if
-they can form a spanning tree. Assume there are \(a\) edges from company \(X\). We can generate
-\[\binom{a}{k}\]
-instances 
+First we assign weights \(X=1\) and \(Y=2\) to each edge labeled \(X\) or \(Y\), respectively. Then we run a minimum spanning tree
+algorithm that takes \(O(n^2)\) time, which produces a spanning tree \(T_\text{max}=(V,E_\text{max})\) that contains the maximum
+number of \(X\) edges. Let this maximum be \(a\). Then we assign weights \(X=2\) and \(Y=1\) to each edge labeled \(X\) or \(Y\),
+respectively, and run a minimum spanning tree algorithm to produce a spanning tree \(T_\text{min}=(V,E_\text{min})\) that contains
+the minimum number of \(X\) edges. Let this minimum be \(b\). Clearly if \(k<b\) or \(k>a\), no spanning tree with \(k\) edges labeled
+\(X\) can exist.
+
+If \(b\leq k \leq a\), we can find a spanning tree with \(k\) edges. We do this as follows. Consider the set
+\(E_\text{max}-E_\text{min}\). They differ by \(d=|E_\text{max}-E_\text{min}|\) edges. We can create a new spanning tree \(T_{\text{min}+1}=(V,E_{\text{min}+1})\)
+by choosing an edge \(e\in E_\text{max}-E_\text{min}\) and adding it to \(E^\prime = E_\text{min}\cup \{e\}\). Then the graph \(G^\prime=(V,E^\prime)\)
+has a cycle that contains an edge \(e^\prime\in E_\text{min}-E_\text{max}\), which we remove to create \(E_{\text{min}+1} = E_\text{min}\cup \{e\}-\{e^\prime\}\).
+Then \(|E_\text{max}-E_{\text{min}+1}|=d-1\), as \(E_{\text{min}+1}\) contains one more edge in \(E_\text{max}\) than \(E_\text{min}\). By induction,
+we can generate \(T_{\text{min}+i}\) by adding one edge in \(E_\text{max}\) and removing one in \(E_{\text{min}+i-1}\) until no more edges differ.
+Each step, the one edge that can differ either adds an \(X\) edge, or does not. Eventually this process must generate some \(T_{\text{min}+i}\) that
+has \(b\leq k\leq a\) edges labeled \(X\), because it transforms the tree \(T_\text{min}\) with \(b\) edges labeled \(X\) to the tree \(T_\text{max}\) with \(a\) edges
+labeled \(X\).
+
+This last step is \(O(n^2)\). This is because there are \(n-1\) edges in a spanning tree with \(n\) nodes, and our algorithm requires \(O(n)\) time to
+check for cycles and compute the differences between two sets of edges. Multiplying these together yields \(O(n^2)\) time for the whole algorithm including the steps
+to find the minimum spanning trees, so we have an overall polynomial runtime.
 
 \pagebreak
 
