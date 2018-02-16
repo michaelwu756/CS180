@@ -9,6 +9,42 @@
 
 \section*{Chapter 4, Problem 25}
 
+Our set of points \(P\) and our distance function \(d(p_i,p_j)\) forms a weighted, complete, undirected graph \(G=(P,E)\)
+where the edge \(e_{ij}=(p_i,p_j)\in E\) has the positive, non-zero weight \(d(p_i,p_j)\). Then we can apply a form of
+Kruskal's Algorithm, where we cluster points with the smallest edge weights iteratively, to generate a hierarchical metric
+\(\tau\). We are motivated by the fact that if we were to add two points to \(\tau\) with an edge weight that was not the
+smallest, we could potentially generate an inconsistent metric. This is because the parent of each node in \(\tau\) must
+have a height that is greater than its children.
+
+Begin our algorithm by having \(n\) leaf nodes \(v_i\) in \(\tau\), each assigned to the point \(p_i\). We run Kruskal's Algorithm on \(G\),
+and add the parent node \(v_{ab}\) that has \(v_a\) and \(v_b\) as its children when we add the first edge \((p_a,p_b)\) in Kruskal's
+Algorithm. Let \(v_{ab}\) have the height \(d(p_a,p_b)\). This node is the root of the cluster consisting of \(p_a\) connected to \(p_b\).
+We continue with Kruskal's Algorithm, and each time when we join two clusters we create a parent node \(v\) that has the roots of the
+clusters as its children. We set the height of \(v\) to the length \(l\) of the edge that joins the clusters. Because Kruskal's Algorithm
+adds edges in increasing length order, this forms a metric \(\tau\) that is consistent with \(d\) because the height of all children must
+be less than or equal to their parent. Additionally, the distance between the closest two points \(p_i\) in the cluster \(C_i\) and \(p_j\)
+in the cluster \(C_j\) that are joined together have the metric \(\tau(p_i,p_j)=d(p_i,p_j)\), and every other pair of points between the
+clusters has a distance greater than this. Because Kruskal's Algorithm must generate a minimum spanning tree, we end up with a connected
+tree \(\tau\) that forms our metric.
+
+We prove that any other hierarchical metric \(\tau^\prime\) consistent with \(d\) has \(\tau^\prime(p_i,p_j)\leq\tau(p_i,p_j)\) for any \(p_i\)
+and \(p_j\) by contradiction. Assume that some \(\tau^\prime\) consistent with \(d\) exists such that \(\tau^\prime(p_i,p_j)>\tau(p_i,p_j)\)
+for some \(p_i\) and \(p_j\). Then there is some least common ancestor \(v\) with children that are the subtrees \(C_i\) that contains \(p_i\) and
+and \(C_j\) that contains \(p_j\). \(v\) has height \(\tau^\prime(p_i,p_j)=h_v\), and so the inequality \(d(p_a,p_b)\geq h_v> \tau(p_i,p_j)\) holds
+for any pair of points \(p_a \in C_i\) and \(p_b \notin C_i\). This is because a common ancestor for \(p_a\) and \(p_b\) must have a height greater
+than or equal to \(h_v\).
+
+Consider a path from \(p_i\) to \(p_j\) in the minimum spanning tree of \(G\). This path must go from some cluster containing \(p_i\) to some cluster
+containing \(p_j\), which can be represented by the disjoint subtrees \(C_i\) and \(C_j\), respectively. So this path must contain a point not in
+\(C_i\). Let \(p\) be the first point along this path not in \(C_i\), and \(p_C\) be the point in \(C_i\) that connects to \(p\).
+Then \(d(p_C,p)\geq h_v> \tau(p_i,p_j)\) since these two points can only share a common ancestor with height greater than or equal to \(h_v\).
+
+But in our formulation of \(\tau\), Kruskal's Algorithm adds edges in order of increasing length. Thus \(\tau(p_i,p_j)\geq d(p_C,p)\) because each edge
+in the minimum spanning tree must be greater than any edge added before it. \(d(p_C,p)\) is an edge in the path between \(p_i\) and \(p_j\). So the edge
+\((p_C,p)\) must be added before or during when we join the clusters containing \(p_i\) and \(p_j\) in Kruskal's Algorithm, so \((p_C,p)\) must be smaller
+than or equal to \(\tau(p_i,p_j)\). This is because \(\tau(p_i,p_j)\) is the length of the longest edge along the path from \(p_i\) to \(p_j\). But we
+also have \(d(p_C,p)\geq h_v> \tau(p_i,p_j)\), which is a contradiction. Thus no such \(\tau^\prime\) exists.
+
 \pagebreak
 
 \section*{Chapter 4, Problem 28}
