@@ -19,11 +19,14 @@ to be the subsequence of \(s\) that is a repetition of \(y\). To solve this prob
                 \text{false} & \text{otherwise}
         \end{cases}
 \]
-for a string \(t\) of length \(|t|=i+j\). Our base case is \(\operatorname{OPT}(0,0)=\text{true}\). Then for our given string \(s\), we consider the substring
-\(s_1\) containing only the first character . This is an interleaving of \(x\) and \(y\) if and only if \(\operatorname{OPT}(1,0)=\text{true}\) or
-\(\operatorname{OPT}(0,1)=\text{true}\). Let us access the \(i\)th character of a string \(a\) using the zero indexed notation \(a[i-1]\). \(\operatorname{OPT}(1,0)\)
-and \(\operatorname{OPT}(0,1)\) are true only if \(s[0]=x^\prime[0]\) or \(s[0]=y^\prime[0]\), respectively. This tells us whether \(s_1\) is an interleaving of \(x\)
-and \(y\). Then we can consider the substring \(s_2\) containing the first and second characters, and calculate \(\operatorname{OPT}(2,0)\),
+for a string \(t\) of length \(|t|=i+j\). Our base case is \(\operatorname{OPT}(0,0)=\text{true}\).
+
+Then for our given string \(s\), we consider the substring \(s_1\) containing only the first character . This is an interleaving of
+\(x\) and \(y\) if and only if \(\operatorname{OPT}(1,0)=\text{true}\) or \(\operatorname{OPT}(0,1)=\text{true}\). Let us access the
+\(i\)th character of a string \(a\) using the zero indexed notation \(a[i-1]\). \(\operatorname{OPT}(1,0)\) and \(\operatorname{OPT}(0,1)\)
+are true only if \(s[0]=x^\prime[0]\) or \(s[0]=y^\prime[0]\), respectively. This tells us whether \(s_1\) is an interleaving of \(x\) and \(y\).
+
+Then we can consider the substring \(s_2\) containing the first and second characters, and calculate \(\operatorname{OPT}(2,0)\),
 \(\operatorname{OPT}(1,1)\), and \(\operatorname{OPT}(0,2)\) using the following recurrence
 \[
         \operatorname{OPT}(i,j)=\begin{cases}
@@ -60,6 +63,7 @@ boolean checkInterleaving(String s, String x, String y){
    return false;
 }
 \end{verbatim}
+
 This has a runtime of at most \(O(s^2)\), because we calculate a \(2\)-D array that has a height and width that grows linearly with \(s\). Its correctness
 is a result of the recurrence relation given above.
 
@@ -110,11 +114,31 @@ int merge(List<Integer> S,int start,int mid,int end) {
    return inversions;
 }
 \end{verbatim}
+
 Here we merge sort our list \(S\) in place, and use the integer \texttt{indInv} as a pointer to track how many significant inversions there are when merging.
 
 \pagebreak
 
 \section*{Chapter 5, Problem 3}
+
+We divide up the set \(S\) of \(n\) cards into two piles of at most \(\frac{n}{2}\) cards. Continue to do this recursively, returning piles of size \(1\). We merge piles
+by noting that if both the left \(L\) and right \(R\) piles of cards do not have a set where more than half of the cards
+in the pile are all equivalent to one another, then \(L\cup R\) cannot have a set where more than half the cards in \(L\cup R\) are all
+equivalent to one another.
+
+If \(L\) has a set \(S_l\) where more than half the cards in \(L\) are equivalent, we need to
+check every element \(e\in R\) to see if \(e\) is equivalent to \(x\in S_l\). Let \(S_{match}\) be the set of \(e\in R\) that are equivalent to
+\(x\in S_l\). Then if \(|S_l\cup S_{match}|>\frac{|L\cup R|}{2}\), we know that a set exists such that more than half the cards in \(L\cup R\) are all
+equivalent to one another.
+
+Similarly for \(R\), if \(R\) has a set \(S_r\) where more than half the cards in \(R\) are equivalent, we need to
+check every element \(e\in L\) to see if \(e\) is equivalent to \(x\in S_r\). Let \(S_{match}\) be the set of \(e\in L\) that are equivalent to
+\(x\in S_r\). Then if \(|S_r\cup S_{match}|>\frac{|L\cup R|}{2}\), we know that a set exists such that more than half the cards in \(L\cup R\) are all
+equivalent to one another.
+
+At most we need to check every element in \(L\) and \(R\) once, so this merge step will take linear time in \(|L\cup R|\).
+After each merge return the equivalence set that has a size of at least half of the merged set \(L\cup R\), if it exists. We merge all the way up
+until we get a result for our original set \(S\). In full the algorithm is as follows.
 
 \begin{verbatim}
 (Card, int) checkFraud(List<Card> S) {
@@ -151,6 +175,16 @@ Here we merge sort our list \(S\) in place, and use the integer \texttt{indInv} 
    return (card, size)
 }
 \end{verbatim}
+
+This code mostly uses Java syntax, except for when it returns a tuple. When there exists
+a set \(X\) of more than half of the cards in \(S\) that are all equivalent to one another, this function returns
+the size of this set \(|X|\) and a card \(x\in X\) from this set. Otherwise it returns null. It suffices to keep track of only these because
+all we need during the merge is \(x\) to check for equivalence and \(|X|\) to determine if there are enough matches \(m\) such
+that \(|X|+m>\frac{|S|}{2}\).
+
+The correctness of this algorithm comes from the previous argument. It has a runtime \(\operatorname{T}(n)\) equal to
+\[\operatorname{T}(n)=2\operatorname{T}\left(\frac{n}{2}\right)+O(n)\]
+which is the same as merge sort. Thus it takes \(O(n\log n)\) time.
 
 \pagebreak
 
