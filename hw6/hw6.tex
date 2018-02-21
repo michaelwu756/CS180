@@ -9,6 +9,60 @@
 
 \section*{Chapter 6, Problem 19}
 
+First we set \(x^\prime=x^k\) for some \(k\) such that \(x^\prime\) is at least the length of \(s\). Similarly for \(y\)
+let \(y^\prime=y^k\) for some \(k\) such that \(y^\prime\) is at least the length of \(s\). If \(s\) is an interleaving of
+\(x\) and \(y\), denote \(s^\prime\) to be the subsequence of \(s\) that is a repetition of \(x\) and denote \(s^{\prime\prime}\)
+to be the subsequence of \(s\) that is a repetition of \(y\). To solve this problem, we consider the subproblems \(\operatorname{OPT}(i,j)\) where
+\[
+        \operatorname{OPT}(i,j)=\begin{cases}
+                \text{true} & \text{if }\exists s^\prime\text{ s.t. } |s^\prime|=i\text{ and }\exists s^{\prime\prime}\text{ s.t. }|s^{\prime\prime}|=j\\
+                \text{false} & \text{otherwise}
+        \end{cases}
+\]
+for a string \(t\) of length \(|t|=i+j\). Our base case is \(\operatorname{OPT}(0,0)=\text{true}\). Then for our given string \(s\), we consider the substring
+\(s_1\) containing only the first character . This is an interleaving of \(x\) and \(y\) if and only if \(\operatorname{OPT}(1,0)=\text{true}\) or
+\(\operatorname{OPT}(0,1)=\text{true}\). Let us access the \(i\)th character of a string \(a\) using the zero indexed notation \(a[i-1]\). \(\operatorname{OPT}(1,0)\)
+and \(\operatorname{OPT}(0,1)\) are true only if \(s[0]=x^\prime[0]\) or \(s[0]=y^\prime[0]\), respectively. This tells us whether \(s_1\) is an interleaving of \(x\)
+and \(y\). Then we can consider the substring \(s_2\) containing the first and second characters, and calculate \(\operatorname{OPT}(2,0)\),
+\(\operatorname{OPT}(1,1)\), and \(\operatorname{OPT}(0,2)\) using the following recurrence
+\[
+        \operatorname{OPT}(i,j)=\begin{cases}
+                \text{true} & \text{if }\operatorname{OPT}(i-1,j)=\text{true and }x^\prime[i-1]=s[i+j-1]\\
+                \text{true} & \text{if }\operatorname{OPT}(i,j-1)=\text{true and }y^\prime[j-1]=s[i+j-1]\\
+                \text{false} & \text{otherwise}
+        \end{cases}
+\]
+which corresponds to assigning the next character in our string to either \(x^\prime\) or \(y^\prime\). We can continue to use this recurrence,
+each time considering a string that increases in length by \(1\), until we calculate every possible \(\operatorname{OPT}(i,j)\) such that \(i+j\) is
+equal to the length of our original string \(s\). If such an \(\operatorname{OPT}(i,j)=\text{true}\), then it is true that \(s\) is an interleaving
+of \(x\) and \(y\). Otherwise \(s\) cannot be an interleaving of \(x\) and \(y\). In full our algorithm is as follows.
+
+\begin{verbatim}
+boolean checkInterleaving(String s, String x, String y){
+   while(x.size()<s.size())
+      x=x.concat(x);
+   while(y.size()<s.size())
+      y=y.concat(y);
+   boolean[][] opt=new boolean[s.size()+1][s.size()1+1];
+   opt[0][0]=true;
+   for(int i=1;i<=s.size();i++)
+      for(int j=0;j<=i;j++){
+         opt[i-j][j]=false;
+         if(i-j-1>0 && opt[i-j-1][j]==true
+         && x.charAt(i-j-1)==s.charAt(i-1))
+            opt[i-j][j]=true;
+         if(j-1>0 && opt[i-j][j-1]==true
+         && y.charAt(j-1)==s.charAt(i-1))
+            opt[i-j][j]=true;
+         if(i==s.size() && opt[i-j][j]==true)
+            return true;
+      }
+   return false;
+}
+\end{verbatim}
+This has a runtime of at most \(O(s^2)\), because we calculate a \(2\)-D array that has a height and width that grows linearly with \(s\). Its correctness
+is a result of the recurrence relation given above.
+
 \pagebreak
 
 \section*{Chapter 5, Problem 2}
