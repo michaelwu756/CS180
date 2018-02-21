@@ -67,13 +67,134 @@ is a result of the recurrence relation given above.
 
 \section*{Chapter 5, Problem 2}
 
+We simply modify the inversion algorithm by maintaining another pointer \(p\) that gives us how many significant inversions there are when merging.
+More explicitly, when we place an element \(r\) from the right half \(R\) before the \(i\)th element of the left half \(L\), we set \(p=i\) and increment it by one until
+we get the \(p=j\)th element \(l_j\) such that \(l_j>2r\). Then we know there are \(|L|-j+1\) significant inversions caused by this placement of \(r\) because \(L\)
+is sorted. For subsequent placements of elements \(r\in R\), we only change \(p\) by incrementing it or moving forward to match the first unplaced element in \(L\). Thus
+\(p\) traverses \(L\) once, which takes linear time. So our merge function still takes linear time, leading to an overall \(O(n \log n)\) runtime for our inversion algorithm.
+In full this algorithm is as follows.
+\begin{verbatim}
+int mergeCountInv(List<Integer> S,int start,int end) {
+   if (end-start<=1)
+      return 0;
+   int mid=(start+end)/2;
+   int inversions=0;
+   inversions+=mergeCountInv(S,start,mid);
+   inversions+=mergeCountInv(S,mid,end);
+   inversions+=merge(S,start,mid,end);
+   return inversions;
+}
+int merge(List<Integer> S,int start,int mid,int end) {
+   List<Integer> merged=new ArrayList<Integer>();
+   int inversions=0;
+   int indL=start;
+   int indR=mid;
+   int indInv=start;
+   while (indL<mid || indR<end)
+      if (indL==mid)
+         merged.add(S.get(indR++));
+      else if (indR==end)
+         merged.add(S.get(indL++));
+      else if (S.get(indL)<=S.get(indR)) {
+         merged.add(S.get(indL++));
+      else {
+         merged.add(S.get(indR++));
+         if(indInv<indL)
+            indInv=indL;
+         while(S.get(indInv)<=2*S.get(indR) && indInv<mid)
+            indInv++;
+         inversions+=mid-indInv;
+      }
+   for (int i=0;i<merged.size();i++)
+      S.set(start+i, merged.get(i));
+   return inversions;
+}
+\end{verbatim}
+Here we merge sort our list \(S\) in place, and use the integer \texttt{indInv} as a pointer to track how many significant inversions there are when merging.
+
 \pagebreak
 
 \section*{Chapter 5, Problem 3}
 
+\begin{verbatim}
+(Card, int) checkFraud(List<Card> S) {
+   if(S.length==1)
+      return (S.get(0),1);
+   List<Card> left=S.subList(0,S.size()/2);
+   List<Card> right=S.subList(S.size()/2,S.size());
+   Card leftCard, int leftSize=checkFraud(left);
+   Card rightCard, int rightSize=checkFraud(right);
+   if(leftCard==null && rightCard==null)
+      return (null,0);
+   int size=0;
+   Card card=null;
+   if(rightCard!=null) {
+      int matches=0;
+      for(int i=0;i<left.size();i++)
+         if(sameAccount(rightCard,left.get(i)))
+            matches++;
+      if(matches+rightSize>S.size()/2) {
+         size=matches+rightSize;
+         card=rightCard;
+      }
+   }
+   if(leftCard!=null) {
+      int matches=0;
+      for(int i=0;i<right.size();i++)
+         if(sameAccount(rightCard,left.get(i)))
+            matches++;
+      if(matches+leftSize>S.size()/2) {
+         size=matches+leftSize;
+         card=leftCard;
+      }
+   }
+   return (card, size)
+}
+\end{verbatim}
+
 \pagebreak
 
 \section*{Chapter 5, Problem 5}
+
+\begin{verbatim}
+List<Line> getVisibleLines(List<Line> lines) {
+   lines=mergeSortBySlope(lines);
+   int i=0;
+   while(i<lines.size()-1)
+      if(lines.get(i).m()==lines.get(i+1).m())
+         if(lines.get(i).b()>=lines.get(i+1).b())
+            lines.remove(i+1);
+         else
+            lines.remove(i);
+      else
+         i++;
+   if(lines.size()<=2)
+      return lines;
+   List<Line> visible = new ArrayList<Line>();
+   visible.add(lines.get(0));
+   visible.add(lines.get(1));
+   int numVisible=2;
+   for(i=2;i<lines.size();i++) {
+      Line prev=visible.get(numVisible-1);
+      Line secondPrev=visible.get(numVisible-2);
+      visible.add(lines.get(i));
+      numVisible++;
+      double prevX = (prev.b()-secondPrev.b())/(prev.m()-secondPrev.m());
+      double currX = (lines.get(i).b()-secondPrev.b())/(lines.get(i).m()-secondPrev.m());
+      while(currX<prevX) {
+         visible.remove(prevX);
+         numVisible—;
+         if(numVisible==2)
+            break;
+         prev = visible.get(numVisible-2);
+         secondPrev = visible.get(numVisible-3);
+         prevX = (prev.b()-secondPrev.b())/(prev.m()-secondPrev.m());
+         currX = (lines.get(i).b()-secondPrev.b())/(lines.get(i).m()-secondPrev.m());
+      }
+   }
+   return visible;
+}
+\end{verbatim}
 
 \pagebreak
 
