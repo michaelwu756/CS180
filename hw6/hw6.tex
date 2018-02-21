@@ -190,6 +190,40 @@ which is the same as merge sort. Thus it takes \(O(n\log n)\) time.
 
 \section*{Chapter 5, Problem 5}
 
+We can actually find the visible lines in linear time if we first sort the lines by increasing slope \(m\).
+Using merge sort takes \(O(n\log n)\) time, which determines the time complexity of our algorithm. Denote a line as
+\(l=(m,b)\) where \(m\) is the slope and \(b\) is the intercept.
+
+After sorting, we traverse our set \(S\) of lines in linear time and remove any parallel lines that are blocked.
+This is easy to do because parallel lines will be adjacent to each other in \(S\), since \(S\) is sorted by slope.
+We simply remove the line with a smaller \(b\) when we encounter two parallel lines next to each other in \(S\).
+If two lines have the same slope \(m\) and intercept \(b\), remove either because they are the same line.
+
+Now \(S\) contains lines sorted by increasing slope, and no two lines in \(S\) have the same slope. To figure out which
+lines are visible, we add the first two elements in \(S\) to our set of visible lines \(V\). If \(|S|\leq 2\), we can simply
+return every line in \(S\), because they all must be visible. This is because every line in \(S\) must intersect, as none
+are parallel. For two lines, there exists some intersection point \(p\) between the first line \(l_1\) and the second \(l_2\) such that \(l_1\) is
+visible on the interval \((-\infty, p)\) and the \(l_2\) is visible on the interval \((p,\infty)\).
+
+Then we consider the third line \(l_3\in S\) and add it to \(V\). This line must be visible as we move towards \(\infty\), since it has
+the greatest slope in \(V\). Next we must determine if it blocks \(l_2\). This happens if the \(x\) value of the intercept between
+\(l_1=(m_1,b_1)\) and \(l_3=(m_3,b_3)\) is less than the \(x\) value of the intercept between \(l_1\) and \(l_2=(m_2,b_2)\). In other words,
+we remove \(l_2\) from \(V\) if
+\[\frac{b_3-b_1}{m_3-m_1}<\frac{b_2-b_1}{m_2-m_1}\]
+This is true due to the fact that \(m_3>m_2\). Note that we do not need to consider the case where \(l_1\), \(l_2\), and \(l_3\)
+intersect at the same location, as we assume no three lines intersect at the same location.
+
+We continue adding each line \(l_i\in S\) as \(l_j\in V\), checking to see if \(l_j\in V\) blocks \(l_{j-1}\) by looking at the intercepts
+of \(l_j\) with \(l_{j-2}\) and \(l_{j-1}\) with \(l_{j-2}\). If a blocking occurs, we remove \(l_{j-1}\) from \(V\) and check again if \(l_j\) blocks
+the new \(l_{j-1}\), removing each blocked line going backwards in \(V\) until either \(|V|=2\) or \(l_{j-1}\) is not blocked. If \(l_{j-1}\) is not blocked,
+then every line previous to it must not be blocked either by \(l_j\) and we can stop there. This is because previously \(l_{j-1}\) was visible on
+an interval \((p_{j-1},\infty)\), but with the addition of \(l_j\) it is visible on the interval \((p_{j-1},p_j)\). Thus \(l_j\) is visible on \((p_j,\infty)\),
+and cannot block any lines visible on the interval \((-\infty,p_{j-1})\) since \(p_{j-1}\leq p_j\).
+
+Although this process may seem to have quadratic time complexity, as we need to look backwards in \(V\) and remove blocked lines for every line in \(S\), it actually
+is linear. Every line in \(S\) can only be added once to \(V\) and removed once from \(V\), leading to \(2|S|=2n\) steps. Thus our entire algorithm scales with the
+time it takes to merge sort \(S\), and takes \(O(n\log n)\) time. In full our algorithm is as follows.
+
 \begin{verbatim}
 List<Line> getVisibleLines(List<Line> lines) {
    lines=mergeSortBySlope(lines);
@@ -207,23 +241,20 @@ List<Line> getVisibleLines(List<Line> lines) {
    List<Line> visible = new ArrayList<Line>();
    visible.add(lines.get(0));
    visible.add(lines.get(1));
-   int numVisible=2;
    for(i=2;i<lines.size();i++) {
-      Line prev=visible.get(numVisible-1);
-      Line secondPrev=visible.get(numVisible-2);
+      Line prev=visible.get(visible.size()-1);
+      Line secondPrev=visible.get(visible.size()-2);
       visible.add(lines.get(i));
-      numVisible++;
-      double prevX = (prev.b()-secondPrev.b())/(prev.m()-secondPrev.m());
-      double currX = (lines.get(i).b()-secondPrev.b())/(lines.get(i).m()-secondPrev.m());
+      double prevX = intercept(prev,secondPrev).getX();
+      double currX = intercept(lines.get(i),secondPrev).getX();
       while(currX<prevX) {
-         visible.remove(prevX);
-         numVisible—;
-         if(numVisible==2)
+         visible.remove(prev);
+         if(visible.size()==2)
             break;
-         prev = visible.get(numVisible-2);
-         secondPrev = visible.get(numVisible-3);
-         prevX = (prev.b()-secondPrev.b())/(prev.m()-secondPrev.m());
-         currX = (lines.get(i).b()-secondPrev.b())/(lines.get(i).m()-secondPrev.m());
+         prev = visible.get(visible.size()-2);
+         secondPrev = visible.get(visible.size()-3);
+         prevX = intercept(prev,secondPrev).getX();
+         currX = intercept(lines.get(i),secondPrev).getX();
       }
    }
    return visible;
