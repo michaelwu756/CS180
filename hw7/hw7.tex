@@ -62,6 +62,96 @@ Thus \(v(f^\prime)\) is \(\frac{1}{r}\) times the maximum flow value, less than 
 
 \section*{Chapter 7, Problem 14}
 
+\paragraph{a)}
+
+Transform this problem into a network flow problem by creating a source node \(s\) that has an edge \((s,x_i)\) for every node \(x_i\in X\). Then
+create a sink node \(t\) and replace every edge into \(S\) with an edge into \(t\). We do not care about edges out of \(S\), as if the flow of people
+reaches some node inside \(S\) they are safe and do not need to leave \(S\). We allow multiple edges into \(t\) from a given node \(v\), as this represents
+how the node \(v\) may have multiple edges that connect to different nodes \(s_i\in S\). Let the capacity of each edge in our graph be \(1\), representing how
+we only allow one group of people to move along an edge. Consolidate multiple edges between two nodes by adding their capacities together. So if there
+are three edges from a node \(v\) into \(S\), for example, replace it by an edge \((v,t)\) with capacity \(3\). This transformation gives us a graph
+\(G^\prime\) that we can find the maximum flow through in polynomial time using the Ford-Fulkerson algorithm.
+
+If and only if our maximum flow through \(G^\prime\) is equal to \(|X|\), there exists a set of evacuation routes from \(X\) to \(S\) such that no route contains the same edge.
+We prove this by noting that if our maximum flow is equal to \(|X|\), then the flow out of \(s\) must pass through every node \(x_i\in X\). This is because
+\(s\) has \(|X|\) edges, one to each populated node. Then the path \(P_i=(s,x_i,\ldots,t)\) in \(G^\prime\) has a flow of \(1\) and corresponds to a
+path \((x_i,\ldots,s_j)\) for some \(s_j\in S\) that shares no edges with any other evacuation path. So there is a path \(P_i\) for every \(x_i\in X\) that
+reaches \(S\) without sharing any edges.
+
+If our maximum flow is less than \(|X|\), no such set of evacuation paths exists. This is because if our maximum flow is less than \(|X|\), this implies there
+is an \(s\)-\(t\) cut \((A,B)\) with capacity \(c(A,B)<|X|\). Then only \(c(A,B)\) groups of people can travel into \(B\) while taking unique paths, which
+contains the set \(S\subseteq B\). Thus fewer than \(|X|\) groups of people can travel into \(S\) while taking unique paths, and no set of evacuation paths exists where
+every populated node has a unique path to \(S\).
+
+\paragraph{b)}
+
+Form \(G^\prime\) as before, except replace each node \(v\) in the original graph \(G\) with \(v_{in}\) and \(v_{out}\). Let there be a single edge \((v_{in},v_{out})\)
+with capacity \(1\) in \(G^\prime\). Replace all the incoming edges of the form \((u,v)\) with \((u,v_in)\) and all the outgoing edges of the form \((v,u)\) with \((v_out,u)\).
+Thus only one group of people can pass through a node in any given path, because only one path can contain the edge \((v_in,v_out)\). Otherwise the connections between
+our nodes remain the same as in the original graph \(G\). Then as before, we can find the maximum flow through \(G^\prime\) and assert that there exists a set of evacuation routes if and only if the maximum flow is equal to \(|X|\).
+
+A graph \(G\) where this process returns yes for part a) and no for part b) is shown below.
+
+\begin{center}
+        \begin{tikzpicture}
+                \begin{scope}[auto, every node/.style={thick, draw,circle,minimum size=1.5em,inner sep=1}, every path/.style={thick, ->, >=stealth}]
+                        \node (X2) at (0,0) {\(x_2\)};
+                        \node (X1) at (0,2) {\(x_1\)};
+                        \node (S2) at (2,0) {\(s_2\)};
+                        \node (S1) at (2,2) {\(s_1\)};
+                        \node (A) at (1,1) {\(a\)};
+
+                        \path (X1) edge (A);
+                        \path (X2) edge (A);
+                        \path (A) edge (S1);
+                        \path (A) edge (S2);
+               \end{scope}
+        \end{tikzpicture}
+\end{center}
+Here \(X=\{x_1,x_2\}\) and \(S=\{s_1, s_2\}\). The corresponding network flow graph \(G^\prime\) for part a) is shown below.
+\begin{center}
+        \begin{tikzpicture}
+                \begin{scope}[auto, every node/.style={thick, draw,circle,minimum size=1.5em,inner sep=1}, every path/.style={thick, ->, >=stealth}]
+                        \node (X2) at (0,0) {\(x_2\)};
+                        \node (X1) at (0,2) {\(x_1\)};
+                        \node (T) at (2,1) {\(t\)};
+                        \node (A) at (1,1) {\(a\)};
+                        \node (S) at (-1,1) {\(s\)};
+
+                        \path (X1) edge node[above,draw=none] {1} (A);
+                        \path (X2) edge node[above,draw=none] {1} (A);
+                        \path (A) edge node[above,draw=none] {2} (T);
+                        \path (S) edge node[above,draw=none] {1} (X1);
+                        \path (S) edge node[above,draw=none] {1} (X2);
+               \end{scope}
+        \end{tikzpicture}
+\end{center}
+This has max flow \(2=|X|\) so our answer is yes. The corresponding network flow graph \(G^\prime\) for part b) is shown below.
+\begin{center}
+        \begin{tikzpicture}
+                \begin{scope}[auto, every node/.style={thick, draw,circle,minimum size=2em,inner sep=1}, every path/.style={thick, ->, >=stealth}]
+                        \node (X2in) at (-2,0) {\(x_{2_{in}}\)};
+                        \node (X1in) at (-2,4) {\(x_{1_{in}}\)};
+                        \node (X2out) at (0,0) {\(x_{2_{out}}\)};
+                        \node (X1out) at (0,4) {\(x_{1_{out}}\)};
+                        \node (T) at (6,2) {\(t\)};
+                        \node (Ain) at (2,2) {\(a_{in}\)};
+                        \node (Aout) at (4,2) {\(a_{out}\)};
+                        \node (S) at (-4,2) {\(s\)};
+
+                        \path (X1out) edge node[above,draw=none] {1} (Ain);
+                        \path (X2out) edge node[above,draw=none] {1} (Ain);
+                        \path (Aout) edge node[above,draw=none] {2} (T);
+                        \path (S) edge node[above,draw=none] {1} (X1in);
+                        \path (S) edge node[above,draw=none] {1} (X2in);
+                        \path (X1in) edge node[above,draw=none] {1} (X1out);
+                        \path (X2in) edge node[above,draw=none] {1} (X2out);
+                        \path (Ain) edge node[above,draw=none] {1} (Aout);
+               \end{scope}
+        \end{tikzpicture}
+\end{center}
+This has max flow \(1<|X|\) so our answer is no.
+
 \pagebreak
 
 \section*{Chapter 7, Problem 17}
