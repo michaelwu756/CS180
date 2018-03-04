@@ -86,8 +86,8 @@ every populated node has a unique path to \(S\).
 \paragraph{b)}
 
 Form \(G^\prime\) as before, except replace each node \(v\) in the original graph \(G\) with \(v_{in}\) and \(v_{out}\). Let there be a single edge \((v_{in},v_{out})\)
-with capacity \(1\) in \(G^\prime\). Replace all the incoming edges of the form \((u,v)\) with \((u,v_in)\) and all the outgoing edges of the form \((v,u)\) with \((v_out,u)\).
-Thus only one group of people can pass through a node in any given path, because only one path can contain the edge \((v_in,v_out)\). Otherwise the connections between
+with capacity \(1\) in \(G^\prime\). Replace all the incoming edges of the form \((u,v)\) with \((u,v_{in})\) and all the outgoing edges of the form \((v,u)\) with \((v_{out},u)\).
+Thus only one group of people can pass through a node in any given path, because only one path can contain the edge \((v_{in},v_{out})\). Otherwise the connections between
 our nodes remain the same as in the original graph \(G\). Then as before, we can find the maximum flow through \(G^\prime\) and assert that there exists a set of evacuation routes if and only if the maximum flow is equal to \(|X|\).
 
 A graph \(G\) where this process returns yes for part a) and no for part b) is shown below.
