@@ -48,7 +48,6 @@
                \path[thick,dashed,transform canvas={xshift=-0.0707cm, yshift=0.0707cm}] (F) edge (T);
         \end{tikzpicture}
 \end{center}
-
 This statement is false. Consider the graph shown above, where each edge has a capacity of \(1\). There is an arbitrary amount
 of rows \(r\) that form paths from the source \(s\) to the sink \(t\), indicated by the vertical dots. Then if the Forward-Edge-Only Algorithm
 chooses the path given by the dotted lines, it will terminate with a flow value of \(v(f^\prime)=1\). But
@@ -155,6 +154,26 @@ This has max flow \(1<|X|\) so our answer is no.
 \pagebreak
 
 \section*{Chapter 7, Problem 17}
+
+Consider the set \(A\) of points that can be reached from \(s\) after the attack, and the set \(B=V-A\) of points that cannot be reached from \(s\) after
+the attack. This forms a minimum cut \((A,B)\), since there are \(k\) removed edges \(e_1,\ldots,e_k\) going out of \(A\) that go into \(B\). Each of these
+removed edges \(e_i\) must carry one unit of network flow, because \((A,B)\) is a minimum cut and the capacity of every edge in our graph is \(1\). Then we
+can form \(k\) paths \(P_1,\ldots,P_k\) from \(s\) to \(t\) which each represent the flow of one unit of traffic through the network. Let no two paths share
+any edges, because if two paths shared an edge \(e\) this would imply that that \(e\) has a capacity greater than \(1\), a contradiction. Furthermore, each
+removed edge \(e_i\) from \(A\) to \(B\) must be assigned to a unique path \(P_i\), since each edge \(e_i\) goes from \(A\) to \(B\). If a path does not
+contain a removed edge \(e_i\), then it could not go from \(s\in A\) to \(t\in B\). Since each path \(P_i\) contains an edge \(e_i\), and no two paths can share
+edges, each path must have one removed edge \(e_i\).
+
+Let \(n\) be the total number of nodes in our graph \(G=(V,E)\). For each path \(P_i\) we can ping \(\log_2(n)\) nodes in \(V\) to find which edge \(e_i\) along
+this path was removed by the attacker. This is because the length of \(P_i\) is at most \(n\), and after the path \(P_i\) travels to the first node in \(B\)
+no subsequent nodes in \(P_i\) will be reachable. So we can use binary search when pinging to find the removed edge, which has a logarithmic runtime complexity.
+So we can find the set of removed edges \(\{e_1,\ldots,e_k\}\) in \(O(k\log n)\) pings, since we run binary search on \(k\) paths. Then
+we can simply do a depth first search on the graph \(G^\prime=G-\{e_1,\ldots,e_k\}\) to find \(A\). This requires no pings, as we already know the original graph
+\(G\) and the removed edges \(\{e_1,\ldots,e_k\}\). Finally we can return \(B=V-A\) to find the set of nodes not reachable from \(s\).
+
+Although this algorithm requires finding the maximum flow through \(G\), which requires greater than \(O(k\log n)\) time, this step requires no pings. Similarly, no
+pings are required to find the paths \(P_1,\ldots,P_k\), as we can construct these solely from our original graph \(G\). So the total amount of pings required grows with
+\(O(k\log n)\).
 
 \pagebreak
 
