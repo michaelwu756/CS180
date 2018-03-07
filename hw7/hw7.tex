@@ -179,4 +179,25 @@ pings are required to find the paths \(P_1,\ldots,P_k\), as we can construct the
 
 \section*{Chapter 7, Problem 29}
 
+We will generate a polynomial time algorithm for this problem by constructing a directed network flow graph \(G\) and finding the minimum cut \((A,B)\)
+on \(G\). First let there be nodes in \(G\) labeled \(v_i\) for every software application \(i\in\{1,\ldots,n\}\). Then for every expense \(x_{ij}\) between
+applications \(i\) and \(j\), let there be two edges \((v_i,v_j)\) and \((v_j,v_i)\) that both have capacity \(x_{ij}\). Let there be a start node
+\(s\) and create edges \((s,v_i)\) that has capacity \(b_i\) for every application \(i\). Finally let \(v_1\) be the end node, as application \(1\) cannot be ported over.
+Then we can find the minimum cut \((A,B)\) on graph \(G\) in polynomial time using our network flow algorithm. The set \(A-\{s\}\) contains the set of
+software applications that maximize the benefits minus the expenses of porting over the applications to the new system.
+
+To prove this algorithm is correct, begin by considering the capacity of the edges leaving \(s\). This is equal to the constant \(C=\sum_{i=1}^n b_i\). Then consider the
+capacity of the minimum cut \(c(A,B)\) on \(G\). Edges that go from \(A\) to \(B\) must either be from one node \(v_i\in A\) to another \(v_j\in B\), or from
+\(s\) to some \(v_j\in B\). Every edge of the form \((v_i,v_j)\) has the capacity \(x_{ij}\) and every edge of the form \((s,v_j)\) has the capacity \(b_j\). So
+we have
+\begin{align*}
+        c(A,B)&=\sum_{v_j\in B}b_j+\sum_{\substack{v_i\in A\\v_j\in B}}x_{ij}\\
+        &=\sum_{i=1}^n b_i-\sum_{v_i\in A}b_i+\sum_{\substack{v_i\in A\\v_j\in B}}x_{ij}\\
+        &=C-\left(\sum_{v_i\in A}b_i-\sum_{\substack{v_i\in A\\v_j\in B}}x_{ij}\right)
+\end{align*}
+Thus our minimum cut \((A,B)\) gives us the set \(A\) which maximizes
+\[\sum_{v_i\in A}b_i-\sum_{\substack{v_i\in A\\v_j\in B}}x_{ij}\]
+since \(C\) is a constant. So our algorithm is correct because the set \(A-\{s\}\) gives us the corresponding set \(S\) of applications that
+maximizes the sum of the benefits \(b_i\) minus the expenses \(x_{ij}\) associated with porting over the applications in \(S\).
+
 \end{document}
